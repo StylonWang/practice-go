@@ -1,6 +1,6 @@
 package main
 
-// one-liner doesn't seem to work
+// one-liner like "import ( "fmt" "os" ) doesn't seem to work
 import (
   "fmt"
   "os"
@@ -15,7 +15,7 @@ type Person struct {
 }
 
 // func receiver-decl func-name (args, ...) (return decl, ...) { }
-// Note: there's a diff. between p *Person and p Person in receiver-decl
+// Note: there's a diff. between p *Person and p Person in receiver-decl (hint: const member)
 func (p *Person) Walk(distance int, direction int) (total_steps int, curr_direction int) {
   fmt.Printf("%s walks %d steps toward degree %d\n",
              p.Name, distance, direction)
@@ -26,12 +26,12 @@ func (p *Person) Walk(distance int, direction int) (total_steps int, curr_direct
 
 // inheritance by composition
 type Warrior struct {
-  Person   // field with type but without a name
+  Person   // field with type but without a name means inheritance with composition
   Title string
   Weapon string
 }
 
-func (w *Warrior) Attack() (bool) {
+func (w *Warrior) Attack() bool {
   fmt.Printf("%s %s attacks with %s\n", w.Title, w.Name, w.Weapon)
   return true; // attack is successful
 }
@@ -52,13 +52,22 @@ func main() {
     fmt.Printf("OK, val %d\n", val);
   }
 
-  guests := [] string { "bobby", "holly", "gates" } // simple array of strings
+  guests := [] string { "bobby", "holly", "gates" } // slice  of strings
   // is there a way to do partial initialization?
-  guests_detail := [] Person { {"Bobby", "Taiwan", true, 0, 0} } // array of Person objects
+  guests_detail := [] Person { {"Bobby", "Taiwan", true, 0, 0} } // array of Person objects, without array size declared
   println(guests[0])
   // how to overload println to print a Person object?
-  println(guests_detail[0].Name);
+  println(guests_detail[0].Name)
   println(len(guests_detail)); // length of arrray
+
+  guests = append(guests, "Elizabeth") // append to slice
+  vip_guests := guests[0:2] // create a slice of the array starting at index 0 with size 2
+
+  // iterate over an array
+  for index, value := range vip_guests {
+    fmt.Printf("%d %s, ", index, value)
+  }
+  fmt.Printf("\n");
 
   man := Person { "David", "US", false, 0, 0 }
   total_steps, _ := man.Walk(100, 270) // take only one of the returned values
@@ -69,6 +78,27 @@ func main() {
   soldier := Warrior { Person {"Shark", "US", false, 0, 0}, "Cadet", "saber" }
   soldier.Walk(50, 60); // call "inherited" method
   soldier.Attack(); // call its own method
+
+  // swap elements in slice
+  stones := [] int {100, 200, 300, 400, 500,}
+  stones[2], stones[3] = stones[4], stones[3]
+
+  for index, value := range stones {
+    fmt.Printf("[%d] %d \n", index, value)
+  }
+
+  mymap := make(map[string]string)
+  //this declares nil map which is not initialized and we cannot insert value to it
+  var mymap2 map[string] string
+  mymap3 :=  map[string] string { "key0": "val0", "key1": "val1", }
+  mymap["power"] = "2"
+  mymap3["key"] = "hey"
+  mymap3["key"] = "heystack"
+
+  fmt.Printf("mymap3[key] is %s\n", mymap3["key"])
+  if mymap2 == nil {
+    println("mymap2 is nil")
+  }
 
   os.Exit(0)
 }
