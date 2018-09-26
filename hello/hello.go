@@ -4,6 +4,8 @@ package main
 import (
   "fmt"
   "os"
+  "hello/mymodule"
+  "hello/log"
 )
 
 type Person struct {
@@ -99,6 +101,18 @@ func main() {
   if mymap2 == nil {
     println("mymap2 is nil")
   }
+
+  mymodule.Show(1)
+
+  slogger := log.CreateSimpleLogger()
+  slogger.Log("hello log!");
+
+  blogger := log.CreateBeautyLogger()
+  blogger.Log("hello log!");
+
+  // use of diff. loggers with same interface
+  mymodule.ShowLog(slogger, "show log")
+  mymodule.ShowLog(blogger, "show log")
 
   os.Exit(0)
 }
