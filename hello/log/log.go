@@ -2,6 +2,11 @@ package log
 
 import "fmt"
 
+// init function of the package, executed only once when this module is loaded
+func init() {
+  fmt.Printf("log inited\n")
+}
+
 type Logger interface {
   Log (message string)
 }

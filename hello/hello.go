@@ -103,6 +103,7 @@ func main() {
   }
 
   mymodule.Show(1)
+  mymodule.Show(2)
 
   slogger := log.CreateSimpleLogger()
   slogger.Log("hello log!");
@@ -114,9 +115,44 @@ func main() {
   mymodule.ShowLog(slogger, "show log")
   mymodule.ShowLog(blogger, "show log")
 
+  demo_defer(2)
+
+  // initialized if: if init-expression; condition { }
+  if _, r:=isOK(); r>3 {
+    fmt.Printf("inited if is OK!\n")
+  }
+
+  // declare multiple variables in if-init
+  if a, b, c := 3, true, 4; a==3 && b {
+    fmt.Printf("inited if 2 is OK! %d\n", c);
+  }
+
+  var a = Person {"Shark", "US", false, 0, 0}
+  a.Name = "Bison"
+  // why this doesn't work and need newPerson to return an object?
+  //if a := Person {"Shark", "US", false, 0, 0} ; a.Name == "Shark" {
+  if a:= newPerson("Shark"); a.Name == "Shark" {
+    fmt.Printf("inited if 3 is %s!\n", a.Name)
+  }
+
   os.Exit(0)
+}
+
+func newPerson(name string) Person {
+  return Person {name, "US", false, 0, 0}
 }
 
 func isOK() (bool, int) {
   return true, 10;
+}
+
+func demo_defer(i int) () {
+  // defer is like a stack unwind on exception or scope guard. So convenient!
+  defer fmt.Printf("defer1\n")
+  defer func () {
+    fmt.Printf("defer2\n")
+  } () // note the trailing ()
+
+  // cannot defer any expression, but enclose the expression in a function call
+  defer func () { if i<3 { fmt.Printf("defer3\n") } } ()
 }
