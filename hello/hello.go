@@ -4,6 +4,7 @@ package main
 import (
   "fmt"
   "os"
+  "unsafe"
   "hello/mymodule"
   "hello/log"
 )
@@ -135,7 +136,41 @@ func main() {
     fmt.Printf("inited if 3 is %s!\n", a.Name)
   }
 
+  // strings and byte arrays
+  str := "word"
+  ba := [] byte (str)
+  fmt.Printf("size of byte array from %s(size %d) is %d\n", str, len(str), len(ba)) // finally no null-terminated crap
+
+  // string and rune
+  for _, value := range str {
+    fmt.Printf("size of str[0], which is a rune: %d\n", unsafe.Sizeof(value))
+    break
+  }
+
+  lg := LogPrepend { BLog }
+  lg.logger("hello")
+
+  lg2 := LogPrepend { YLog }
+  lg2.logger("hello")
+  lg2.logger = BLog
+  lg2.logger("hello")
+
   os.Exit(0)
+}
+
+// function type
+type Log func (message string)
+
+type LogPrepend struct {
+  logger Log
+}
+
+func BLog (message string) {
+  fmt.Printf("[basic] %s\n", message)
+}
+
+func YLog (message string) {
+  fmt.Printf("[yarn] %s\n", message)
 }
 
 func newPerson(name string) Person {
