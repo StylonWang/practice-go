@@ -7,6 +7,8 @@ import (
   "unsafe"
   "hello/mymodule"
   "hello/log"
+  "time"
+  "sync"
 )
 
 type Person struct {
@@ -147,6 +149,7 @@ func main() {
     break
   }
 
+  // function type
   lg := LogPrepend { BLog }
   lg.logger("hello")
 
@@ -155,7 +158,61 @@ func main() {
   lg2.logger = BLog
   lg2.logger("hello")
 
+  // how to wait for go routines to finish
+  var wg sync.WaitGroup
+  wg.Add(2)
+
+  // go routines with anonymous routine
+  go func () {
+    defer func() {
+      fmt.Printf("go routine done\n")
+      wg.Done()
+    } ()
+    fmt.Printf("start going!\n")
+    for i := 0; i<10; i++ {
+      time.Sleep(100*time.Millisecond)
+      fmt.Printf("go %d!\n", i)
+    }
+  } ()
+
+  // create a channel
+  c := make(chan int)
+
+  // note that WaitGroup must not be passed by value or
+  // it gets copied into another object and cause fatal error on wg.Wait()
+  go my_routine(c , &wg)
+
+  // feed data to go routines via channel
+  for i := 5; i > -2; {
+    select {
+    case  c <- i:
+      fmt.Printf("sending %d\n", i)
+      i--
+    default:
+    }
+  }
+
+  fmt.Printf("waiting for go routines to finish\n")
+  wg.Wait()
+  fmt.Printf("all go routines finished\n")
+  // no need for waiting
+  // time.Sleep(2*time.Second)
+
   os.Exit(0)
+}
+
+func my_routine (c chan int, wg *sync.WaitGroup) {
+  defer wg.Done()
+  for {
+    r := <- c
+    if r<0 {
+      fmt.Printf("myroutine break\n")
+      break
+    } else {
+      fmt.Printf("my_routine %d\n", r)
+    }
+  }
+  fmt.Printf("myroutine exits\n")
 }
 
 // function type
